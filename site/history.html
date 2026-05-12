@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History — Mazy Job Match</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1><a href="index.html">Mazy Job Match</a> — History</h1>
+      <div class="history-picker">
+        <label for="date-select">Select date:</label>
+        <select id="date-select"></select>
+      </div>
+      <div id="stats" class="stats"></div>
+    </div>
+  </header>
+
+  <main id="job-list"></main>
+
+  <script>
+    const BASE = 'data/history/';
+
+    async function loadDates() {
+      // Populate last 14 dates based on today
+      const sel = document.getElementById('date-select');
+      const today = new Date();
+      for (let i = 0; i < 14; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const iso = d.toISOString().slice(0, 10);
+        const opt = document.createElement('option');
+        opt.value = iso;
+        opt.textContent = iso;
+        sel.appendChild(opt);
+      }
+      sel.addEventListener('change', () => loadDate(sel.value));
+      loadDate(sel.value);
+    }
+
+    async function loadDate(date) {
+      try {
+        const resp = await fetch(`${BASE}${date}.json`);
+        if (!resp.ok) { document.getElementById('job-list').innerHTML = '<p class="empty">No data for this date.</p>'; return; }
+        const data = await resp.json();
+        renderStats(data.stats, data.run_timestamp);
+        renderJobs(data.jobs || []);
+      } catch {
+        document.getElementById('job-list').innerHTML = '<p class="empty">Could not load data.</p>';
+      }
+    }
+
+    function renderStats(stats, ts) {
+      if (!stats) return;
+      const el = document.getElementById('stats');
+      el.textContent = `Updated: ${ts ? ts.replace('T', ' ').replace('Z', ' UTC') : '?'} · ${stats.total_scraped || 0} scraped → ${stats.after_filters || 0} shown`;
+    }
+
+    function renderJobs(jobs) {
+      const list = document.getElementById('job-list');
+      if (!jobs.length) { list.innerHTML = '<p class="empty">No jobs found for this date.</p>'; return; }
+      list.innerHTML = jobs.map(jobCard).join('');
+      list.querySelectorAll('.toggle-jd').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const jd = btn.closest('.job-card').querySelector('.jd-text');
+          if (jd) { jd.hidden = !jd.hidden; btn.textContent = jd.hidden ? 'Show JD' : 'Hide JD'; }
+        });
+      });
+    }
+
+    function jobCard(job) {
+      const BADGES = { 1: '🔥 Top Pick', 2: '⭐ Good Match', 3: '📋 Check It Out', 4: '🔗 No JD' };
+      const badge = BADGES[job.priority_tier] || '';
+      const logo = job.company_logo ? `<img class="logo" src="${job.company_logo}" alt="">` : '<div class="logo-placeholder"></div>';
+      const kw = job.keywords || {};
+      const skills = [...(kw.required_skills||[]), ...(kw.preferred_skills||[])].slice(0, 8);
+      const skillChips = skills.map(s => `<span class="chip">${s}</span>`).join('');
+      const visaChip = kw.visa_status === 'sponsorship_available' ? '<span class="chip visa">Visa OK</span>' : '';
+      const coverage = job.keyword_coverage != null ? Math.round(job.keyword_coverage * 100) + '% match' : '';
+      const applyBtn = job.apply_url ? `<a href="${job.apply_url}" target="_blank" class="btn-apply">Apply</a>` : '';
+      const jdSection = job.description_text ? `<button class="toggle-jd">Show JD</button><p class="jd-text" hidden>${job.description_text.slice(0, 2000)}…</p>` : '';
+      return `<div class="job-card tier-${job.priority_tier}">
+  <div class="card-top">
+    ${logo}
+    <div class="card-main">
+      <div class="tier-badge">${badge}</div>
+      <div class="job-title">${job.title}</div>
+      <div class="job-company">${job.company} · ${job.location || job.locations?.join(', ') || ''}</div>
+      <div class="job-meta">${job.source} · Posted ${job.posted_at ? job.posted_at.slice(0,10) : ''}${job.applicants_count ? ' · ' + job.applicants_count + ' applicants' : ''}</div>
+      <div class="chips-row">${visaChip}${skillChips}${coverage ? `<span class="chip coverage">${coverage}</span>` : ''}</div>
+    </div>
+    <div class="card-actions">${applyBtn}</div>
+  </div>
+  ${jdSection}
+</div>`;
+    }
+
+    loadDates();
+  </script>
+</body>
+</html>

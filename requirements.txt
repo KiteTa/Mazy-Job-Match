@@ -1,0 +1,16 @@
+pytest>=7.4
+python-dateutil>=2.9
+
+# Phase 5+
+requests>=2.31
+apify-client>=1.7
+
+# Phase 6
+beautifulsoup4>=4.12
+lxml>=5.0
+
+# Phase 7
+google-genai>=1.0
+
+# Local dev (optional, non-fatal if absent)
+python-dotenv>=1.0
