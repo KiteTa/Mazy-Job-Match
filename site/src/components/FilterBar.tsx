@@ -76,7 +76,7 @@ export default function FilterBar({ filters, onChange, totalCount }: FilterBarPr
   return (
     <div
       className="flex items-center gap-2 px-4 py-2 shrink-0 flex-wrap"
-      style={{ background: '#EEF6F5', borderBottom: '0.5px solid #C8D9D8' }}
+      style={{ background: '#F7F7F7', borderBottom: '0.5px solid #E2E2E2' }}
     >
       <Dropdown
         label="Location"

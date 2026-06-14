@@ -38,7 +38,7 @@ export default function JobRow({ job, selected, onSelect, onBlacklist }: Omit<Jo
         'flex items-stretch cursor-pointer group relative transition-colors duration-100',
         selected ? 'bg-row-selected' : 'hover:bg-row-hover',
       ].join(' ')}
-      style={{ borderBottom: '0.5px solid #C8D9D8', minHeight: 64 }}
+      style={{ borderBottom: '0.5px solid #E2E2E2', minHeight: 64 }}
     >
       {/* Content */}
       <div className="flex-1 min-w-0 px-3 py-2.5">

@@ -16,7 +16,7 @@ export default function RingChart({ pct, color }: RingChartProps) {
         height={52}
         style={{ transform: 'rotate(-90deg)', display: 'block' }}
       >
-        <circle cx={26} cy={26} r={R} fill="none" stroke="#C8D9D8" strokeWidth={STROKE} />
+        <circle cx={26} cy={26} r={R} fill="none" stroke="#E0E0E0" strokeWidth={STROKE} />
         <circle
           cx={26}
           cy={26}

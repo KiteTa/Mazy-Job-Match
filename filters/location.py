@@ -16,10 +16,6 @@ _REMOTE_WORDS = re.compile(r'\bremote\b', re.IGNORECASE)
 
 
 def passes_location(job: dict) -> bool:
-    source = job.get("source", "linkedin")
-    if source == "linkedin":
-        return job.get("country", "").upper() == "US"
-    # GitHub: check locations array
     locations = job.get("locations") or []
     return any(_is_us_or_remote(loc) for loc in locations)
 

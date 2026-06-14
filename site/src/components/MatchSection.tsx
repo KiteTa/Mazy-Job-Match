@@ -25,7 +25,7 @@ export default function MatchSection({ job }: MatchSectionProps) {
         <span className="text-[12px] font-semibold" style={{ color }}>{pct}%</span>
       </div>
 
-      <div className="rounded-full overflow-hidden mb-3" style={{ height: 3, background: '#C8D9D8' }}>
+      <div className="rounded-full overflow-hidden mb-3" style={{ height: 3, background: '#E0E0E0' }}>
         <div
           className="h-full rounded-full transition-all duration-300"
           style={{ width: `${pct}%`, background: color }}
@@ -50,8 +50,8 @@ export default function MatchSection({ job }: MatchSectionProps) {
               key={s}
               className="text-[11px] px-2 py-0.5 rounded-full"
               style={{
-                border: '1px dashed #A8C8C6',
-                color: '#7A9A98',
+                border: '1px dashed #C4C4C4',
+                color: '#909090',
                 background: 'transparent',
               }}
             >

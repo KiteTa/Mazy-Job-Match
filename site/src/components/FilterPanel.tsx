@@ -40,7 +40,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
         ))}
       </Row>
 
-      <div className="my-3" style={{ height: '0.5px', background: '#C8D9D8' }} />
+      <div className="my-3" style={{ height: '0.5px', background: '#E2E2E2' }} />
 
       <Row label="Job type">
         {JOB_TYPES.map(opt => (
@@ -54,7 +54,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
         ))}
       </Row>
 
-      <div className="my-3" style={{ height: '0.5px', background: '#C8D9D8' }} />
+      <div className="my-3" style={{ height: '0.5px', background: '#E2E2E2' }} />
 
       <Row label="Visa">
         <Pill
@@ -66,7 +66,7 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
       </Row>
 
       {hasAny && (
-        <div className="mt-3 pt-3 flex justify-end" style={{ borderTop: '0.5px solid #C8D9D8' }}>
+        <div className="mt-3 pt-3 flex justify-end" style={{ borderTop: '0.5px solid #E2E2E2' }}>
           <button
             onClick={clearAll}
             className="text-[11px] text-chip-text hover:text-chip-on-text transition-colors"

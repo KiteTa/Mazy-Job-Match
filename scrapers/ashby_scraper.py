@@ -73,18 +73,27 @@ def scrape_ashby(companies: list[dict]) -> list[dict]:
             if published < cutoff:
                 continue
 
-            apply_url = posting.get('jobUrl', '')
-            location_tag = 'Remote' if is_remote else 'United States'
+            all_locs = [location] if location else []
+            for sec in posting.get('secondaryLocations', []):
+                sec_loc = sec.get('location', '')
+                if sec_loc and sec_loc not in all_locs:
+                    all_locs.append(sec_loc)
+
             results.append({
                 'id': posting.get('id', ''),
                 'title': title,
                 'company': name,
-                'location': location,
-                'locations': [location_tag],
-                'url': apply_url,
-                'apply_url': apply_url,
-                'description_text': posting.get('descriptionPlain', '') or posting.get('description', ''),
+                'locations': all_locs,
+                'is_remote': is_remote,
+                'work_type': posting.get('workplaceType', ''),
+                'job_type': posting.get('employmentType', ''),
+                'department': posting.get('department', ''),
+                'url': posting.get('jobUrl', ''),
+                'apply_url': posting.get('applyUrl', '') or posting.get('jobUrl', ''),
+                'description_text': posting.get('descriptionPlain', ''),
+                'description_html': None,
                 'published_at': published_raw,
+                'active': posting.get('isListed', True),
                 'source': 'ashby',
             })
 

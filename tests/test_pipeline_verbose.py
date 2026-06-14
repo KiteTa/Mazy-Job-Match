@@ -159,7 +159,7 @@ def print_table(results: list[dict]) -> None:
         row = SEP.join([
             _trunc(job.get('title', ''),    W['title']),
             _trunc(job.get('company', ''),  W['company']),
-            _trunc(job.get('location', ''), W['location']),
+            _trunc(', '.join(job.get('locations', [])), W['location']),
             _age(job.get('published_at', '')).ljust(W['published']),
             _cell(*r['active'],    W['active']),
             _cell(*r['dedup'],     W['dedup']),

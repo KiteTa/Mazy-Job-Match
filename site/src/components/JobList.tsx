@@ -26,12 +26,12 @@ export default function JobList({
   return (
     <div
       className="flex flex-col shrink-0 bg-cream"
-      style={{ width: 260, borderRight: '0.5px solid #C8D9D8' }}
+      style={{ width: 260, borderRight: '0.5px solid #E2E2E2' }}
     >
       {/* Sort header */}
       <div
         className="flex items-center justify-end px-2 py-1 shrink-0"
-        style={{ borderBottom: '0.5px solid #C8D9D8', minHeight: 30 }}
+        style={{ borderBottom: '0.5px solid #E2E2E2', minHeight: 30 }}
       >
         <SortButton sort={sort} onChange={onSortChange} />
       </div>

@@ -3,35 +3,39 @@ export interface Job {
   id: string | null
   title: string
   company: string
-  location: string | null
   locations: string[]
+  is_remote?: boolean | null
+  work_type?: string | null
+  job_type?: string | null
+  department?: string | null
   url: string | null
   apply_url: string | null
+  description_text: string | null
+  description_html?: string | null
   published_at: string | null
   posted_at: string | null
-  description_text: string | null
+  first_published_at?: string | null
+  active?: boolean | null
+  is_visible?: boolean
   // enriched
   required_skills?: string[]
   tools_and_tech?: string[]
   visa_status?: string | null
   salary_min?: number | null
   salary_max?: number | null
-  work_type?: string | null
-  job_type?: string | null
   seniority?: string | null
   yoe_required?: string | null
   applicant_count?: number | null
   applicants_today?: number | null
   sponsors_visa?: boolean | null
-  // linkedin legacy
+  // legacy (github scraper)
   applicants_count?: string | null
   seniority_level?: string | null
   employment_type?: string | null
   workplace_types?: string[]
   salary?: string | null
   country?: string | null
-  active?: boolean
-  is_visible?: boolean
+  location?: string | null
 }
 
 export interface JobsData {

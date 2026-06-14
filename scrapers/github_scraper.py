@@ -72,7 +72,6 @@ def _normalise(item: dict) -> dict:
         'salary': None,
         'expire_at': None,
         'country': None,
-        'location': None,
         'company_logo': None,
         'company_address': None,
         'company_description': None,

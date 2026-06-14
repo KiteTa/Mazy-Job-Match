@@ -110,12 +110,12 @@ export default function App() {
       <div className="h-screen flex flex-col overflow-hidden bg-cream">
         <div style={{ height: 44, background: '#A8D8D0', borderBottom: '0.5px solid #8ECAC0' }} />
         <div className="flex flex-1 overflow-hidden">
-          <div className="shrink-0 overflow-y-auto bg-cream" style={{ width: 260, borderRight: '0.5px solid #C8D9D8' }}>
+          <div className="shrink-0 overflow-y-auto bg-cream" style={{ width: 260, borderRight: '0.5px solid #E2E2E2' }}>
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="px-3 py-2.5 skeleton" style={{ borderBottom: '0.5px solid #C8D9D8', minHeight: 64 }}>
-                <div className="h-3 rounded mb-1.5" style={{ width: `${60 + (i % 3) * 15}%`, background: '#C8D9D8' }} />
-                <div className="h-2.5 rounded mb-2" style={{ width: '45%', background: '#DFF0EE' }} />
-                <div className="h-2 rounded" style={{ width: '30%', background: '#DFF0EE' }} />
+              <div key={i} className="px-3 py-2.5 skeleton" style={{ borderBottom: '0.5px solid #E2E2E2', minHeight: 64 }}>
+                <div className="h-3 rounded mb-1.5" style={{ width: `${60 + (i % 3) * 15}%`, background: '#E0E0E0' }} />
+                <div className="h-2.5 rounded mb-2" style={{ width: '45%', background: '#EEEEEE' }} />
+                <div className="h-2 rounded" style={{ width: '30%', background: '#EEEEEE' }} />
               </div>
             ))}
           </div>

@@ -7,44 +7,44 @@ export default {
         serif: ['"DM Serif Display"', 'serif'],
       },
       colors: {
-        // Core surfaces — teal-tinted (brand hue ≈ 185°)
-        cream:     '#EEF6F5',   // body shell   (was warm #F7F3EC)
-        parchment: '#F5FAFA',   // detail pane  (was warm #FDFAF6)
-        'match-bg':'#DFF0EE',   // match card   (was warm #F0EBE2)
-        sand:      '#C8D9D8',   // borders      (was warm #E5E0D8)
+        // Core surfaces — clean white
+        cream:     '#FFFFFF',   // body shell
+        parchment: '#FAFAFA',   // detail pane (subtle off-white to differentiate)
+        'match-bg':'#F4F4F4',   // match card
+        sand:      '#E2E2E2',   // borders
 
-        // Header — keep existing teal
+        // Header — teal (unchanged)
         header:        '#A8D8D0',
         'header-border':'#8ECAC0',
 
         // Row states
-        'row-selected':'#D5ECEA',   // was #EDE7DC
-        'row-hover':   '#E2EFED',   // was #F0EBE2
+        'row-selected':'#EDEDED',
+        'row-hover':   '#F5F5F5',
 
-        // Tier indicators
+        // Tier indicators (unchanged)
         'tier-green':  '#8ABF78',
         'tier-amber':  '#C4A96A',
-        'tier-gray':   '#9BBDBB',   // was warm #C0BAB2
+        'tier-gray':   '#ABABAB',
 
-        // Skill / JD highlight
+        // Skill / JD highlight (unchanged — semantic colors)
         'skill-bg':    '#EDF5E8',
         'skill-text':  '#5A8A4A',
-        'skill-border':'#B8D0CF',   // was warm #C4BDB2
-        'jd-key':      '#2E6E78',   // was blue-gray #5A7A9A → teal-steel
+        'skill-border':'#DEDEDE',
+        'jd-key':      '#2E6E78',
 
-        // New / Sponsor badges (semantic — kept)
+        // New / Sponsor badges (unchanged — semantic)
         'badge-new-bg':      '#EDF5E8',
         'badge-new-text':    '#5A8A4A',
         'badge-sponsor-bg':  '#EAE6F5',
         'badge-sponsor-text':'#6B5FA8',
 
         // Filter chips
-        chip:           '#E5F0EF',   // was warm #EFEBE3
-        'chip-border':  '#BAD0CF',   // was warm #D9D4CB
-        'chip-text':    '#4A7070',   // was warm #6B6560
-        'chip-on':      '#CEEAE8',   // was warm #E8E2D8
-        'chip-on-border':'#A8C8C6',  // was warm #C4BDB2
-        'chip-on-text': '#1E3A36',   // was #3D3A36 — reuse forest green
+        chip:           '#F2F2F2',
+        'chip-border':  '#D6D6D6',
+        'chip-text':    '#606060',
+        'chip-on':      '#E8E8E8',
+        'chip-on-border':'#C4C4C4',
+        'chip-on-text': '#1E3A36',
 
         // Accent / primary action (unchanged)
         'level-fill':  '#1E3A36',

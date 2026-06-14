@@ -66,29 +66,50 @@ def fetch_greenhouse_jobs(companies: list[dict]) -> list[dict]:
             if _TITLE_BLACKLIST_RE.search(title):
                 continue
 
-            location = (job.get('location') or {}).get('name', '')
-            if not _US_RE.search(location):
+            offices = job.get('offices', [])
+            locations = [o['name'] for o in offices if o.get('name')]
+            loc_text = ' '.join(o.get('location', '') for o in offices) or (job.get('location') or {}).get('name', '')
+            if not locations:
+                fallback = (job.get('location') or {}).get('name', '')
+                locations = [fallback] if fallback else []
+                loc_text = fallback
+            if not _US_RE.search(loc_text):
                 continue
 
-            updated_raw = job.get('updated_at', '')
+            first_pub_raw = job.get('first_published', '') or job.get('updated_at', '')
             try:
-                updated = datetime.fromisoformat(updated_raw.replace('Z', '+00:00'))
+                pub_date = datetime.fromisoformat(first_pub_raw.replace('Z', '+00:00'))
             except (ValueError, AttributeError):
                 continue
-            if updated < cutoff:
+            if pub_date < cutoff:
                 continue
 
+            work_type = ''
+            for m in job.get('metadata', []):
+                if m.get('name') == 'Location Type':
+                    work_type = m.get('value', '')
+                    break
+
+            depts = job.get('departments', [])
+            department = depts[0].get('name', '') if depts else ''
+
+            content = job.get('content', '')
             apply_url = job.get('absolute_url', '')
             results.append({
                 'id': str(job.get('id', '')),
                 'title': title,
                 'company': name,
-                'location': location,
-                'locations': [location],
+                'locations': locations,
+                'is_remote': work_type.lower() == 'remote',
+                'work_type': work_type,
+                'job_type': None,
+                'department': department,
                 'url': apply_url,
                 'apply_url': apply_url,
-                'description_text': job.get('content', ''),
-                'published_at': updated_raw,
+                'description_text': content,
+                'description_html': content,
+                'published_at': first_pub_raw,
+                'active': None,
                 'source': 'greenhouse',
             })
 
