@@ -168,6 +168,10 @@ venv.bak/
 /site
 !site/
 
+# Frontend build artifacts
+site/node_modules/
+site/dist/
+
 # mypy
 .mypy_cache/
 .dmypy.json

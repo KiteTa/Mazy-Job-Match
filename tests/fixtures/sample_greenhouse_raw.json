@@ -1,0 +1,65 @@
+{
+  "id": 4956672008,
+  "title": "Analytics Data Engineer",
+  "company_name": "Anthropic",
+  "absolute_url": "https://job-boards.greenhouse.io/anthropic/jobs/4956672008",
+  "location": {
+    "name": "San Francisco, CA | New York City, NY | Seattle, WA"
+  },
+  "updated_at": "2026-05-22T17:53:11-04:00",
+  "first_published": "2025-10-17T14:13:10-04:00",
+  "requisition_id": "10520",
+  "language": "en",
+  "application_deadline": null,
+  "metadata": [
+    {
+      "id": 4036944008,
+      "name": "Location Type",
+      "value": "On-Site",
+      "value_type": "single_select"
+    }
+  ],
+  "departments": [
+    {
+      "id": 4010154008,
+      "name": "Data Science & Analytics",
+      "child_ids": [],
+      "parent_id": null
+    }
+  ],
+  "offices": [
+    {
+      "id": 4001219008,
+      "name": "New York City, NY",
+      "location": "New York, New York, United States",
+      "child_ids": [],
+      "parent_id": null
+    },
+    {
+      "id": 4001218008,
+      "name": "San Francisco, CA",
+      "location": "San Francisco, California, United States",
+      "child_ids": [],
+      "parent_id": null
+    },
+    {
+      "id": 4001217008,
+      "name": "Seattle, WA",
+      "location": "Seattle, Washington, United States",
+      "child_ids": [],
+      "parent_id": null
+    }
+  ],
+  "content": "<h2>About the Role</h2><p>As an Analytics Engineer, you will be an early member of the Data Science &amp; Analytics team building the foundation to scale analytics across our organization. You will collaborate with key stakeholders in Engineering, Product, GTM and other areas to build scalable solutions to transform data into key metrics reporting and insights.</p><h2>Responsibilities</h2><ul><li>Understand the data needs of stakeholder teams and translate that into technical requirements</li><li>Define, build and manage key data pipelines in dbt</li><li>Establish high data integrity standards and SLAs</li><li>Develop insightful dashboards to track performance of core metrics</li></ul><h2>You might be a good fit if you have</h2><ul><li>5+ years of experience as an Analytics Data Engineer</li><li>Expertise in SQL and Python</li><li>Experience with dbt, Airflow, GitHub</li><li>Experience building dashboards in tools like Hex or Looker</li></ul>",
+  "data_compliance": [
+    {
+      "type": "gdpr",
+      "requires_consent": false,
+      "requires_processing_consent": false,
+      "requires_retention_consent": false,
+      "retention_period": null,
+      "demographic_data_consent_applies": false
+    }
+  ],
+  "internal_job_id": 4354104008
+}

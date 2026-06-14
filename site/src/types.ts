@@ -1,0 +1,57 @@
+export interface Job {
+  source: string
+  id: string | null
+  title: string
+  company: string
+  location: string | null
+  locations: string[]
+  url: string | null
+  apply_url: string | null
+  published_at: string | null
+  posted_at: string | null
+  description_text: string | null
+  // enriched
+  required_skills?: string[]
+  tools_and_tech?: string[]
+  visa_status?: string | null
+  salary_min?: number | null
+  salary_max?: number | null
+  work_type?: string | null
+  job_type?: string | null
+  seniority?: string | null
+  yoe_required?: string | null
+  applicant_count?: number | null
+  applicants_today?: number | null
+  sponsors_visa?: boolean | null
+  // linkedin legacy
+  applicants_count?: string | null
+  seniority_level?: string | null
+  employment_type?: string | null
+  workplace_types?: string[]
+  salary?: string | null
+  country?: string | null
+  active?: boolean
+  is_visible?: boolean
+}
+
+export interface JobsData {
+  date: string
+  run_timestamp: string
+  stats: {
+    total_scraped: number
+    after_filters: number
+  }
+  jobs: Job[]
+}
+
+export type SortOption = 'latest' | 'match' | 'competition'
+
+export interface Filters {
+  locations: string[]
+  companyType: 'all' | 'faang' | 'other'
+  workTypes: string[]
+  jobTypes: string[]
+  past24h: boolean
+  sponsorOnly: boolean
+  sort: SortOption
+}

@@ -11,10 +11,8 @@ def normalize(s: str) -> str:
 
 
 def canonical_id(job: dict) -> str:
-    if job['source'] == 'linkedin':
-        return f"linkedin:{job['id']}"
     h = hashlib.sha1(job['url'].encode()).hexdigest()[:12]
-    return f"github:{h}"
+    return f"{job['source']}:{h}"
 
 
 def composite_key(job: dict) -> str:

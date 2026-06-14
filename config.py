@@ -1,9 +1,13 @@
-LINKEDIN_SEARCH_URLS = [
-    'https://www.linkedin.com/jobs/search?keywords=Junior%20Software%20Engineer&location=United%20States&geoId=103644278&f_TPR=r86400&position=1&pageNum=0',
-    'https://www.linkedin.com/jobs/search?keywords=New%20Grad%20Software%20Engineer&location=United%20States&geoId=103644278&f_TPR=r86400&position=1&pageNum=0',
-    'https://www.linkedin.com/jobs/search?keywords=Entry%20Level%20Software%20Engineer&location=United%20States&geoId=103644278&f_TPR=r86400&position=1&pageNum=0',
-    'https://www.linkedin.com/jobs/search?keywords=Associate%20Software%20Engineer&location=United%20States&geoId=103644278&f_TPR=r86400&position=1&pageNum=0',
-]
+TARGET_COMPANIES = {
+    "greenhouse": [
+        {"name": "Airbnb",    "token": "airbnb"},
+        {"name": "Anthropic", "token": "anthropic"},
+    ],
+    "ashby": [
+        {"name": "Notion", "token": "notion"},
+        {"name": "Ramp",   "token": "ramp"},
+    ],
+}
 
 PREFERRED_STACK = [
     'Python', 'TypeScript', 'JavaScript', 'React', 'Node',

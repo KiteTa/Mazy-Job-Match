@@ -1,0 +1,42 @@
+{
+  "id": "d818443f-d4c5-4eab-892d-3715a935c165",
+  "title": "Software Engineer, Banking",
+  "department": "Engineering",
+  "team": "Backend",
+  "employmentType": "FullTime",
+  "location": "New York, NY (HQ)",
+  "secondaryLocations": [
+    {
+      "location": "San Francisco, CA",
+      "address": {
+        "postalAddress": {
+          "addressRegion": "California",
+          "addressCountry": "USA",
+          "addressLocality": "San Francisco"
+        }
+      }
+    },
+    {
+      "location": "Remote (US)",
+      "address": {
+        "postalAddress": {
+          "addressCountry": "United States"
+        }
+      }
+    }
+  ],
+  "publishedAt": "2026-05-27T17:37:14.045+00:00",
+  "isListed": true,
+  "isRemote": true,
+  "workplaceType": "Remote",
+  "address": {
+    "postalAddress": {
+      "addressRegion": "NY",
+      "addressCountry": "USA",
+      "addressLocality": "New York City"
+    }
+  },
+  "jobUrl": "https://jobs.ashbyhq.com/ramp/d818443f-d4c5-4eab-892d-3715a935c165",
+  "applyUrl": "https://jobs.ashbyhq.com/ramp/d818443f-d4c5-4eab-892d-3715a935c165/application",
+  "descriptionPlain": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $200B in annualized spend flows in and out of 70,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-dense, and unforgiving.\n\nWe hire people with high agency and high urgency. We look for slope over intercept. We care less about where you trained and more about what you've built. At Ramp, everyone is a builder who owns problems end to end and makes consequential decisions that shape the outcome.\n\nAbout the Role\n\nThe Payments and Banking team builds the foundational backend systems that power every dollar flowing through Ramp. We're a platform-first team obsessed with correctness, reliability, and scale.\n\nWhat You'll Do\n\n - Design and build large-scale backend systems for money movement with strict correctness requirements\n - Architect clean, extensible abstractions for complex payments infrastructure\n - Build systems that handle both traditional banking and emerging crypto payment rails\n - Interface with diverse third-party banking and payments partners\n - Own problems end to end — from technical architecture to production reliability\n\nWhat You Need\n\n - 5+ years of backend or platform engineering experience, ideally in high-scale production environments\n - Strong systems design skills\n - Comfort with distributed systems, performance optimization, and production reliability\n - Experience thriving in fast-moving environments with high ambiguity\n\nNice to Have\n\n - Experience in fintech, payments, or banking (ACH, card rails, crypto, ledgers)\n - Familiarity with financial concepts: billing, reconciliation, ledgering, banking flows"
+}

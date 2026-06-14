@@ -9,7 +9,7 @@ _US_STATE_ABBR = re.compile(
 )
 
 _US_COUNTRY_WORDS = re.compile(
-    r'\b(united states|usa|u\.s\.a|u\.s\.|america)\b', re.IGNORECASE
+    r'\b(united states|usa|u\.s\.a|u\.s\.|america|us)\b', re.IGNORECASE
 )
 
 _REMOTE_WORDS = re.compile(r'\bremote\b', re.IGNORECASE)

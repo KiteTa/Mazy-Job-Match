@@ -1,74 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mazy Job Match</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <header>
-    <div class="header-inner">
-      <h1>Mazy Job Match</h1>
-      <div id="stats" class="stats"></div>
-      <div id="stack-chips" class="chips-row"></div>
-    </div>
-  </header>
-
-  <div class="toolbar">
-    <input type="text" id="search" placeholder="Search title or company…" autocomplete="off">
-
-    <div class="filter-group">
-      <label>Tier</label>
-      <label><input type="checkbox" class="tier-filter" value="1" checked> 🔥 Top Pick</label>
-      <label><input type="checkbox" class="tier-filter" value="2" checked> ⭐ Good Match</label>
-      <label><input type="checkbox" class="tier-filter" value="3" checked> 📋 Check It Out</label>
-      <label><input type="checkbox" class="tier-filter" value="4" checked> 🔗 No JD</label>
-    </div>
-
-    <div class="filter-group">
-      <label>Source</label>
-      <label><input type="checkbox" class="src-filter" value="linkedin" checked> LinkedIn</label>
-      <label><input type="checkbox" class="src-filter" value="github" checked> GitHub</label>
-    </div>
-
-    <div class="filter-group">
-      <label>Domain</label>
-      <select id="domain-filter">
-        <option value="">All</option>
-        <option value="backend">Backend</option>
-        <option value="frontend">Frontend</option>
-        <option value="fullstack">Full Stack</option>
-        <option value="ML/AI">ML / AI</option>
-        <option value="mobile">Mobile</option>
-        <option value="data">Data</option>
-        <option value="devops">DevOps</option>
-      </select>
-    </div>
-
-    <div class="filter-group">
-      <label><input type="checkbox" id="jd-filter"> Has JD only</label>
-      <label><input type="checkbox" id="visa-filter"> Visa sponsor only</label>
-    </div>
-
-    <div class="filter-group">
-      <label>Sort</label>
-      <select id="sort-select">
-        <option value="default">Default (tier → applicants → coverage)</option>
-        <option value="coverage">Coverage % ↓</option>
-        <option value="posted">Posted ↓ (newest)</option>
-        <option value="company">Company A–Z</option>
-        <option value="applicants">Applicants ↑</option>
-      </select>
-    </div>
-  </div>
-
-  <main id="job-list"></main>
-
-  <footer>
-    <a href="history.html">View history (14 days)</a>
-  </footer>
-
-  <script src="app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MazyJobs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
