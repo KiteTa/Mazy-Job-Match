@@ -44,7 +44,17 @@ export default function DetailPane({ job, onApply }: DetailPaneProps) {
       {/* Meta grid */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-2 mb-4">
         {job.locations?.length > 0 && (
-          <MetaRow label="Location" value={job.locations.join(', ')} />
+          <div>
+            <p className="text-[12px] text-chip-text mb-0.5">Location</p>
+            <p className="text-[14px] text-[#2D2A26]">
+              {job.locations.map((loc, i) => (
+                <span key={i}>
+                  {i > 0 && <span className="mx-1.5 font-bold text-[#1E3A36]">·</span>}
+                  {loc}
+                </span>
+              ))}
+            </p>
+          </div>
         )}
         {(job.job_type ?? job.employment_type) && (
           <MetaRow label="Job type" value={job.job_type ?? job.employment_type!} />

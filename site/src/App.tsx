@@ -17,7 +17,7 @@ export default function App() {
   const [applyCount, setApplyCount] = useState<number>(() => getApplyCount())
   const [blacklist, setBlacklist] = useState<Set<string>>(() => getBlacklist())
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(() => getAppliedIds())
-  const [listWidth, setListWidth] = useState(260)
+  const [listWidth, setListWidth] = useState(400)
   const isDragging = useRef(false)
   const dragStart = useRef({ x: 0, width: 0 })
 
@@ -31,7 +31,7 @@ export default function App() {
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       if (!isDragging.current) return
-      const newW = Math.max(180, Math.min(480, dragStart.current.width + e.clientX - dragStart.current.x))
+      const newW = Math.max(200, Math.min(600, dragStart.current.width + e.clientX - dragStart.current.x))
       setListWidth(newW)
     }
     const onUp = () => {
@@ -140,7 +140,7 @@ export default function App() {
       <div className="h-screen flex flex-col overflow-hidden bg-cream">
         <div style={{ height: 44, background: '#A8D8D0', borderBottom: '0.5px solid #8ECAC0' }} />
         <div className="flex flex-1 overflow-hidden">
-          <div className="shrink-0 overflow-y-auto bg-cream" style={{ width: listWidth, borderRight: '0.5px solid #E2E2E2' }}>
+          <div className="shrink-0 overflow-y-auto bg-cream" style={{ width: 400, borderRight: '0.5px solid #E2E2E2' }}>
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="px-3 py-2.5 skeleton" style={{ borderBottom: '0.5px solid #E2E2E2', minHeight: 64 }}>
                 <div className="h-3 rounded mb-1.5" style={{ width: `${60 + (i % 3) * 15}%`, background: '#E0E0E0' }} />
