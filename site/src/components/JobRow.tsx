@@ -27,8 +27,9 @@ export default function JobRow({ job, selected, onSelect, onBlacklist }: Omit<Jo
     return () => document.removeEventListener('mousedown', handler)
   }, [menuOpen])
 
+  const cityOnly = (loc: string) => loc.split(',')[0].trim()
   const locationText = job.location
-    ?? (job.locations?.length ? job.locations[0] : null)
+    ?? (job.locations?.length ? job.locations.map(cityOnly).join(' · ') : null)
     ?? ''
 
   return (

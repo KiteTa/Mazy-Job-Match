@@ -14,12 +14,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import config
-from filters.dedup import canonical_id, composite_key
 from filters.location import passes_location
 from filters.seniority import passes_seniority
 from filters.tech_stack import passes_tech_stack, _REJECT_SIGNALS
 from filters.blacklist import passes_blacklist
-from output.writer import load_seen
 
 _L2_REJECT = re.compile(
     r'\b(senior|staff|principal|lead|manager|director|'
@@ -35,18 +33,6 @@ def check_active(job: dict) -> tuple[bool, str]:
         return False, 'inactive'
     if not job.get('is_visible', True):
         return False, 'not visible'
-    return True, 'PASS'
-
-
-def check_dedup(job: dict, seen: dict) -> tuple[bool, str]:
-    cid = canonical_id(job)
-    if cid in seen['by_id']:
-        days = (_utc_now() - _parse_date(seen['by_id'][cid]['date_seen'])).days
-        return False, f'seen {days}d ago'
-    ck = composite_key(job)
-    if ck in seen['by_company_title']:
-        days = (_utc_now() - _parse_date(seen['by_company_title'][ck]['date_seen'])).days
-        return False, f'title+co {days}d ago'
     return True, 'PASS'
 
 
@@ -84,7 +70,6 @@ def check_blacklist(job: dict) -> tuple[bool, str]:
 # ── scrapers ──────────────────────────────────────────────────────────────────
 
 def do_scrape(source: str, token: str) -> list[dict]:
-    # Find the configured name for this token, fall back to title-cased token
     companies = [{'name': token.title(), 'token': token}]
     for entry in config.TARGET_COMPANIES.get(source, []):
         if entry['token'] == token:
@@ -109,7 +94,6 @@ W = {
     'location':  22,
     'published':  8,
     'active':     8,
-    'dedup':     16,
     'loc':       18,
     'seniority': 20,
     'blacklist': 14,
@@ -144,7 +128,6 @@ def print_table(results: list[dict]) -> None:
         _trunc('LOCATION',  W['location']),
         _trunc('PUBLISHED', W['published']),
         _trunc('ACTIVE',    W['active']),
-        _trunc('DEDUP',     W['dedup']),
         _trunc('LOCATION',  W['loc']),
         _trunc('SENIORITY', W['seniority']),
         _trunc('BLACKLIST', W['blacklist']),
@@ -157,12 +140,11 @@ def print_table(results: list[dict]) -> None:
     for r in results:
         job = r['job']
         row = SEP.join([
-            _trunc(job.get('title', ''),    W['title']),
-            _trunc(job.get('company', ''),  W['company']),
-            _trunc(', '.join(job.get('locations', [])), W['location']),
+            _trunc(job.get('title', ''),                      W['title']),
+            _trunc(job.get('company', ''),                    W['company']),
+            _trunc(', '.join(job.get('locations', [])),       W['location']),
             _age(job.get('published_at', '')).ljust(W['published']),
             _cell(*r['active'],    W['active']),
-            _cell(*r['dedup'],     W['dedup']),
             _cell(*r['location'],  W['loc']),
             _cell(*r['seniority'], W['seniority']),
             _cell(*r['blacklist'], W['blacklist']),
@@ -172,14 +154,9 @@ def print_table(results: list[dict]) -> None:
 
 
 def print_summary(results: list[dict]) -> None:
-    def after(key: str) -> int:
-        return sum(1 for r in results if r[key][0])
-
-    # cumulative counts (each stage only counts jobs that passed all prior stages)
     n_active    = sum(1 for r in results if r['active'][0])
-    n_dedup     = sum(1 for r in results if r['active'][0] and r['dedup'][0])
-    n_location  = sum(1 for r in results if r['active'][0] and r['dedup'][0] and r['location'][0])
-    n_seniority = sum(1 for r in results if r['active'][0] and r['dedup'][0] and r['location'][0] and r['seniority'][0])
+    n_location  = sum(1 for r in results if r['active'][0] and r['location'][0])
+    n_seniority = sum(1 for r in results if r['active'][0] and r['location'][0] and r['seniority'][0])
     n_final     = sum(1 for r in results if r['final'])
 
     print()
@@ -187,7 +164,6 @@ def print_summary(results: list[dict]) -> None:
     print(
         f'After filters: '
         f'active={n_active}  '
-        f'dedup={n_dedup}  '
         f'location={n_location}  '
         f'seniority={n_seniority}  '
         f'blacklist={n_final}'
@@ -217,20 +193,16 @@ def main() -> None:
     jobs = do_scrape(args.source, args.company)
     print(f'Scraper returned {len(jobs)} jobs (already filtered by title/location/date)\n')
 
-    seen = load_seen()
-
     results = []
     for job in jobs:
         r_active = check_active(job)
-        r_dedup  = check_dedup(job, seen)    if r_active[0] else (False, 'skipped')
-        r_loc    = check_location(job)       if r_dedup[0]  else (False, 'skipped')
+        r_loc    = check_location(job)       if r_active[0] else (False, 'skipped')
         r_sen    = check_seniority_tech(job) if r_loc[0]    else (False, 'skipped')
         r_bl     = check_blacklist(job)      if r_sen[0]    else (False, 'skipped')
-        final    = r_active[0] and r_dedup[0] and r_loc[0] and r_sen[0] and r_bl[0]
+        final    = r_active[0] and r_loc[0] and r_sen[0] and r_bl[0]
         results.append({
             'job':       job,
             'active':    r_active,
-            'dedup':     r_dedup,
             'location':  r_loc,
             'seniority': r_sen,
             'blacklist': r_bl,

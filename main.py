@@ -4,18 +4,16 @@ import argparse
 import json
 import logging
 from datetime import datetime, timezone
-from pathlib import Path
 
 import config
-from scrapers.github_scraper import fetch_github_jobs
 from scrapers.greenhouse_scraper import fetch_greenhouse_jobs
 from scrapers.ashby_scraper import scrape_ashby
-from filters.dedup import is_seen, mark_seen, cleanup
 from filters.location import passes_location
 from filters.seniority import passes_seniority
 from filters.tech_stack import passes_tech_stack
-from filters.blacklist import passes_blacklist
-from output.writer import init_data_dir, write_history, update_latest, load_seen, save_seen
+from filters.blacklist import passes_blacklist, build_blocked_set
+from filters.security import passes_security
+from output.supabase_writer import upsert_jobs, insert_pipeline_run
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,18 +30,13 @@ except ImportError:
 
 # ── scrapers ──────────────────────────────────────────────────────────────────
 
-ALL_SOURCES = ('github', 'greenhouse', 'ashby')
+ALL_SOURCES = ('greenhouse', 'ashby')
 
 
 def scrape(sources: list[str] | None = None) -> list[dict]:
     """Fetch raw jobs. Pass sources=['ashby'] to target a single source."""
     active = set(sources or ALL_SOURCES)
     jobs: list[dict] = []
-
-    if 'github' in active:
-        batch = fetch_github_jobs()
-        logger.info('github: %d raw', len(batch))
-        jobs += batch
 
     if 'greenhouse' in active:
         batch = fetch_greenhouse_jobs(config.TARGET_COMPANIES.get('greenhouse', []))
@@ -67,12 +60,6 @@ def filter_active(jobs: list[dict]) -> list[dict]:
     return out
 
 
-def filter_dedup(jobs: list[dict], seen: dict) -> list[dict]:
-    out = [j for j in jobs if not is_seen(j, seen)]
-    logger.info('dedup:           %d → %d', len(jobs), len(out))
-    return out
-
-
 def filter_location(jobs: list[dict]) -> list[dict]:
     out = [j for j in jobs if passes_location(j)]
     logger.info('location:        %d → %d', len(jobs), len(out))
@@ -86,64 +73,82 @@ def filter_seniority_tech(jobs: list[dict]) -> list[dict]:
 
 
 def filter_blacklist(jobs: list[dict]) -> list[dict]:
-    out = [j for j in jobs if passes_blacklist(j, config.BLACKLIST)]
+    blocked = build_blocked_set(config.BLACKLIST)
+    out = [j for j in jobs if passes_blacklist(j, blocked)]
     logger.info('blacklist:       %d → %d', len(jobs), len(out))
     return out
 
 
-def run_filters(jobs: list[dict], seen: dict) -> list[dict]:
-    jobs = filter_active(jobs)
-    jobs = filter_dedup(jobs, seen)
-    jobs = filter_location(jobs)
-    jobs = filter_seniority_tech(jobs)
-    jobs = filter_blacklist(jobs)
-    return jobs
+def filter_security(jobs: list[dict]) -> list[dict]:
+    out = [j for j in jobs if passes_security(j)]
+    logger.info('security:        %d → %d', len(jobs), len(out))
+    return out
+
+
+def _drop_detail(stage: str, job: dict) -> str:
+    if stage == 'location':
+        locs = job.get('locations') or []
+        return ', '.join(locs) or '(no locations)'
+    if stage == 'active':
+        return f"active={job.get('active')} is_visible={job.get('is_visible')}"
+    if stage == 'seniority_tech':
+        if not passes_seniority(job):
+            level = job.get('seniority_level') or job.get('seniority') or ''
+            return f"seniority: {level or 'inferred from title'}"
+        return 'tech stack'
+    if stage == 'security':
+        return 'security/defense role'
+    if stage == 'blacklist':
+        return 'blacklisted company'
+    return ''
+
+
+def run_filters(jobs: list[dict]) -> tuple[list[dict], dict]:
+    stages = [
+        ('active',         filter_active),
+        ('blacklist',      filter_blacklist),
+        ('security',       filter_security),
+        ('location',       filter_location),
+        ('seniority_tech', filter_seniority_tech),
+    ]
+
+    remaining = jobs
+    breakdown: dict = {}
+
+    for stage_name, filter_fn in stages:
+        passed = filter_fn(remaining)
+        passed_set = {id(j) for j in passed}
+        for j in remaining:
+            if id(j) not in passed_set:
+                detail = _drop_detail(stage_name, j)
+                logger.info(
+                    'dropped [%s] %s / %s — %s',
+                    stage_name, j.get('company', '?'), j.get('title', '?'), detail,
+                )
+        breakdown[f'after_{stage_name}'] = len(passed)
+        remaining = passed
+
+    return remaining, breakdown
 
 
 # ── pipeline ──────────────────────────────────────────────────────────────────
 
 def run_pipeline(sources: list[str] | None = None, dry_run: bool = False) -> None:
     today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-    init_data_dir()
-
-    seen = load_seen()
-    cleanup(seen, days=config.DEDUP_WINDOW_DAYS)
 
     raw = scrape(sources)
-    passed = run_filters(raw, seen)
-
-    for job in passed:
-        mark_seen(job, seen)
-
-    # TODO: re-enable priority scoring once filter evaluation is complete
-    # from ranking.priority import assign_priority, sort_jobs
-    # for job in passed: assign_priority(job)
-    # passed = sort_jobs(passed)
+    passed, breakdown = run_filters(raw)
 
     stats = {'total_scraped': len(raw), 'after_filters': len(passed)}
     logger.info('done: %d → %d jobs', len(raw), len(passed))
 
     if dry_run:
-        print(json.dumps({'stats': stats, 'jobs': passed[:5]}, indent=2, default=str))
+        print(json.dumps({'stats': stats, 'breakdown': breakdown, 'jobs': passed[:5]}, indent=2, default=str))
         return
 
-    write_history(today, stats, passed)
-    update_latest(today)
-    save_seen(seen)
-    _sync_data_to_site()
+    upsert_jobs(passed)
+    insert_pipeline_run(today, stats, breakdown)
     logger.info('output written for %s', today)
-
-
-def _sync_data_to_site() -> None:
-    import shutil
-    repo = Path(__file__).parent
-    src, dst = repo / 'data', repo / 'site' / 'data'
-    dst.mkdir(parents=True, exist_ok=True)
-    (dst / 'history').mkdir(exist_ok=True)
-    for f in src.glob('*.json'):
-        shutil.copy2(f, dst / f.name)
-    for f in (src / 'history').glob('*.json'):
-        shutil.copy2(f, dst / 'history' / f.name)
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────

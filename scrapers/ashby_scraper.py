@@ -4,6 +4,8 @@ from datetime import datetime, timedelta, timezone
 
 import requests
 
+from config import SCRAPE_CUTOFF_DAYS
+
 logger = logging.getLogger(__name__)
 
 _SWE_RE = re.compile(
@@ -34,11 +36,10 @@ _TITLE_BLACKLIST_RE = re.compile(
     re.IGNORECASE,
 )
 
-_CUTOFF_DAYS = 7
 
 
 def scrape_ashby(companies: list[dict]) -> list[dict]:
-    cutoff = datetime.now(timezone.utc) - timedelta(days=_CUTOFF_DAYS)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=SCRAPE_CUTOFF_DAYS)
     results = []
 
     for company in companies:

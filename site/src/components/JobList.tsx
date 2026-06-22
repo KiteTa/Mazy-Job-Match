@@ -25,8 +25,8 @@ export default function JobList({
 }: JobListProps) {
   return (
     <div
-      className="flex flex-col shrink-0 bg-cream"
-      style={{ width: 260, borderRight: '0.5px solid #E2E2E2' }}
+      className="flex flex-col bg-cream h-full"
+      style={{ width: '100%' }}
     >
       {/* Sort header */}
       <div

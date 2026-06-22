@@ -8,6 +8,17 @@ _US_STATE_ABBR = re.compile(
     r'TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b'
 )
 
+_US_STATE_NAMES = re.compile(
+    r'\b(alabama|alaska|arizona|arkansas|california|colorado|connecticut|delaware|'
+    r'florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|'
+    r'maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|'
+    r'nebraska|nevada|new\s+hampshire|new\s+jersey|new\s+mexico|new\s+york|'
+    r'north\s+carolina|north\s+dakota|ohio|oklahoma|oregon|pennsylvania|'
+    r'rhode\s+island|south\s+carolina|south\s+dakota|tennessee|texas|utah|vermont|'
+    r'west\s+virginia|virginia|washington|wisconsin|wyoming|district\s+of\s+columbia)\b',
+    re.IGNORECASE,
+)
+
 _US_COUNTRY_WORDS = re.compile(
     r'\b(united states|usa|u\.s\.a|u\.s\.|america|us)\b', re.IGNORECASE
 )
@@ -26,5 +37,7 @@ def _is_us_or_remote(loc: str) -> bool:
     if _US_COUNTRY_WORDS.search(loc):
         return True
     if _US_STATE_ABBR.search(loc):
+        return True
+    if _US_STATE_NAMES.search(loc):
         return True
     return False

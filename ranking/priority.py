@@ -15,7 +15,7 @@ def assign_priority(job: dict) -> dict:
     unmatched = [s for s in stack if s not in tools]
     coverage = len(matched) / len(stack) if stack else 0.0
 
-    has_jd = job.get('has_jd', False)
+    has_jd = bool(job.get('has_jd') or job.get('description_text'))
     company = (job.get('company') or '').strip().lower()
     is_big_tech = any(name.lower() == company for name in config.BIG_TECH_COMPANIES)
 

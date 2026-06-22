@@ -1,8 +1,12 @@
+import html as _html
 import logging
 import re
 from datetime import datetime, timedelta, timezone
 
 import requests
+from bs4 import BeautifulSoup
+
+from config import SCRAPE_CUTOFF_DAYS
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +33,7 @@ _SWE_RE = re.compile(
 )
 
 _TITLE_BLACKLIST_RE = re.compile(
-    r'\b(sales|solutions|support|customer|field'
+    r'\b(sales|support|customer|field'
     r'|technical\s+support|implementation|integration|test|qa)\b',
     re.IGNORECASE,
 )
@@ -41,11 +45,9 @@ _US_RE = re.compile(
     re.IGNORECASE,
 )
 
-_CUTOFF_DAYS = 7
-
 
 def fetch_greenhouse_jobs(companies: list[dict]) -> list[dict]:
-    cutoff = datetime.now(timezone.utc) - timedelta(days=_CUTOFF_DAYS)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=SCRAPE_CUTOFF_DAYS)
     results = []
 
     for company in companies:
@@ -68,7 +70,7 @@ def fetch_greenhouse_jobs(companies: list[dict]) -> list[dict]:
 
             offices = job.get('offices', [])
             locations = [o['name'] for o in offices if o.get('name')]
-            loc_text = ' '.join(o.get('location', '') for o in offices) or (job.get('location') or {}).get('name', '')
+            loc_text = ' '.join(o.get('location') or '' for o in offices) or (job.get('location') or {}).get('name', '')
             if not locations:
                 fallback = (job.get('location') or {}).get('name', '')
                 locations = [fallback] if fallback else []
@@ -93,23 +95,30 @@ def fetch_greenhouse_jobs(companies: list[dict]) -> list[dict]:
             depts = job.get('departments', [])
             department = depts[0].get('name', '') if depts else ''
 
-            content = job.get('content', '')
+            content = job.get('content', '') or ''
             apply_url = job.get('absolute_url', '')
+
+            raw_html = _html.unescape(content)
+            soup = BeautifulSoup(raw_html, 'lxml')
+            body = soup.find('body')
+            clean_html = body.decode_contents() if body else raw_html
+            clean_text = soup.get_text(separator='\n', strip=True)
+
             results.append({
                 'id': str(job.get('id', '')),
                 'title': title,
                 'company': name,
                 'locations': locations,
-                'is_remote': work_type.lower() == 'remote',
+                'is_remote': (work_type or '').lower() == 'remote',
                 'work_type': work_type,
                 'job_type': None,
                 'department': department,
                 'url': apply_url,
                 'apply_url': apply_url,
-                'description_text': content,
-                'description_html': content,
+                'description_text': clean_text,
+                'description_html': clean_html,
                 'published_at': first_pub_raw,
-                'active': None,
+                'active': True,
                 'source': 'greenhouse',
             })
 

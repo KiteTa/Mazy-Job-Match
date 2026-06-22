@@ -1,42 +1,72 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { DEFAULT_FILTERS } from './constants'
 import { applyFilters, getJobDate, isNew, jobKey } from './lib/utils'
 import { addAppliedId, addToBlacklist, getAppliedIds, getApplyCount, getBlacklist, saveApplyCount } from './lib/storage'
-import type { Filters, Job, JobsData } from './types'
+import { supabase } from './lib/supabase'
+import type { Filters, Job } from './types'
 import DetailPane from './components/DetailPane'
 import FilterBar from './components/FilterBar'
 import Header from './components/Header'
 import JobList from './components/JobList'
 
-const CUTOFF_MS = 48 * 3600 * 1000
-
 export default function App() {
-  const [jobsData, setJobsData] = useState<JobsData | null>(null)
+  const [jobs, setJobs] = useState<Job[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
   const [applyCount, setApplyCount] = useState<number>(() => getApplyCount())
   const [blacklist, setBlacklist] = useState<Set<string>>(() => getBlacklist())
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(() => getAppliedIds())
+  const [listWidth, setListWidth] = useState(260)
+  const isDragging = useRef(false)
+  const dragStart = useRef({ x: 0, width: 0 })
+
+  const startResize = useCallback((e: React.MouseEvent) => {
+    isDragging.current = true
+    dragStart.current = { x: e.clientX, width: listWidth }
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+  }, [listWidth])
 
   useEffect(() => {
-    fetch('/jobs_latest.json')
-      .then(r => r.json())
-      .then((d: JobsData) => setJobsData(d))
-      .catch(err => setError(String(err)))
+    const onMove = (e: MouseEvent) => {
+      if (!isDragging.current) return
+      const newW = Math.max(180, Math.min(480, dragStart.current.width + e.clientX - dragStart.current.x))
+      setListWidth(newW)
+    }
+    const onUp = () => {
+      isDragging.current = false
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+    return () => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+  }, [])
+
+  useEffect(() => {
+    supabase
+      .from('jobs')
+      .select('*')
+      .eq('active', true)
+      .order('published_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) setError(error.message)
+        else setJobs((data as Job[]) ?? [])
+      })
   }, [])
 
   const visibleJobs = useMemo<Job[]>(() => {
-    if (!jobsData) return []
-    const cutoff = Date.now() - CUTOFF_MS
-    return jobsData.jobs.filter(job => {
-      const date = getJobDate(job)
-      if (date && new Date(date).getTime() < cutoff) return false
+    if (!jobs) return []
+    return jobs.filter(job => {
       if (blacklist.has(job.company)) return false
       if (hiddenIds.has(jobKey(job))) return false
       return true
     })
-  }, [jobsData, blacklist, hiddenIds])
+  }, [jobs, blacklist, hiddenIds])
 
   const filteredJobs = useMemo(() => applyFilters(visibleJobs, filters), [visibleJobs, filters])
 
@@ -105,12 +135,12 @@ export default function App() {
     )
   }
 
-  if (!jobsData) {
+  if (!jobs) {
     return (
       <div className="h-screen flex flex-col overflow-hidden bg-cream">
         <div style={{ height: 44, background: '#A8D8D0', borderBottom: '0.5px solid #8ECAC0' }} />
         <div className="flex flex-1 overflow-hidden">
-          <div className="shrink-0 overflow-y-auto bg-cream" style={{ width: 260, borderRight: '0.5px solid #E2E2E2' }}>
+          <div className="shrink-0 overflow-y-auto bg-cream" style={{ width: listWidth, borderRight: '0.5px solid #E2E2E2' }}>
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="px-3 py-2.5 skeleton" style={{ borderBottom: '0.5px solid #E2E2E2', minHeight: 64 }}>
                 <div className="h-3 rounded mb-1.5" style={{ width: `${60 + (i % 3) * 15}%`, background: '#E0E0E0' }} />
@@ -138,15 +168,19 @@ export default function App() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        <JobList
-          jobs={filteredJobs}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          onApply={handleApply}
-          onBlacklist={handleBlacklist}
-          sort={filters.sort}
-          onSortChange={s => setFilters(f => ({ ...f, sort: s }))}
-        />
+        <div style={{ width: listWidth, flexShrink: 0 }}>
+          <JobList
+            jobs={filteredJobs}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            onApply={handleApply}
+            onBlacklist={handleBlacklist}
+            sort={filters.sort}
+            onSortChange={s => setFilters(f => ({ ...f, sort: s }))}
+          />
+        </div>
+
+        <div className="resize-handle" onMouseDown={startResize} />
 
         <DetailPane job={selectedJob} onApply={handleApply} />
       </div>

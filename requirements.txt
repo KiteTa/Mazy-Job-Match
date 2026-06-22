@@ -3,7 +3,7 @@ python-dateutil>=2.9
 
 # Phase 5+
 requests>=2.31
-apify-client>=1.7
+supabase>=2.0
 
 # Phase 6
 beautifulsoup4>=4.12
